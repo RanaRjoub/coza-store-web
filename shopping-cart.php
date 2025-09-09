@@ -54,7 +54,7 @@
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__option">
             <div class="offcanvas__links">
-                <a href="account.html">Sign in</a>
+                <a href="register.php">Sign in</a>
                 <a href="#">FAQs</a>
             </div>
             <div class="offcanvas__top__hover">
@@ -205,7 +205,7 @@
                                         </div>
                                         <div class="product__cart__item__text">
                                             <h6><?= htmlspecialchars($item['name'])?></h6>
-                                            <h5><?= htmlspecialchars($item['price'])?></h5>
+                                            <h5><?= '$' . htmlspecialchars($item['price'])?></h5>
                                         </div>
                                     </td>
                                     <td class="quantity__item">
@@ -256,7 +256,7 @@
                             <li>Subtotal <span id="cartSubtotal">$<?= number_format($finalPrice, 2)?></span></li>
                             <li>Total <span id="cartSum">$<?= number_format($finalPrice, 2)?></span></li>
                         </ul>
-                        <a href="#" class="primary-btn">Proceed to checkout</a>
+                        <a href="checkout.php" class="primary-btn">Proceed to checkout</a>
                     </div>
                 </div>
             </div>

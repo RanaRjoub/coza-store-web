@@ -1,41 +1,20 @@
 <?php
-include 'products.php'; 
 $filter = $_POST['filter'] ?? '';
-$filterProducts = $products;
+include 'db.php';
+$sql = "SELECT  DISTINCT p.* FROM products p 
+        JOIN product_filters pf ON p.product_id=pf.product_id
+        JOIN filters f ON pf.filter_id = f.filter_id
+        WHERE f.name = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $filter); 
 
-if ($filter == 'low_high') {
-    usort($filterProducts, function ($a, $b) {
-        return $a['price'] - $b['price'];
-    });
-} elseif ($filter == 'high_low') {
-    usort($filterProducts, function ($a, $b) {
-        return $b['price'] - $a['price'];
-    });
+$stmt->execute();
+$result = $stmt->get_result();
 
-}
-else if ($filter=='0_50'){
-    $filtered=array_filter($products ,function($product){
-return $product['price']>=0 &&$product['price']<=50;
-});
-usort($filtered , function($a,$b){
-   return $a['price']-$b['price'];
-    });
-    $filterProducts=$filtered;
-}
-else if ($filter=='50_100'){
-    $filtered=array_filter($products ,function($product){
-return $product['price']>50 &&$product['price']<=100;
-});
-usort($filtered , function($a,$b){
-   return $a['price']-$b['price'];
-    });
-    $filterProducts=$filtered;
-}
-
-
-
-foreach ($filterProducts as $product):
+   
+while ($product=$result->fetch_assoc()):
 ?>
+  
     <div class="col-lg-4 col-md-6 col-sm-6">
         <div class="product__item">
             
@@ -54,7 +33,7 @@ foreach ($filterProducts as $product):
                     <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
                     <input type="hidden" name="price" value="<?= $product['price'] ?>">
                     <input type="hidden" name="image" value="<?= $product['main_image'] ?>">
-                    <a class="add-cart"> <button type="submit">Add to Cart</button></a>
+                    <a class="add-cart"> <button type="submit" style="margin-right:20px ; border:0px ; width:120px ; height:50px" >Add to Cart</button></a>
                 </form>
 
                 <div class="rating">
@@ -73,4 +52,6 @@ foreach ($filterProducts as $product):
             </div>
         </div>
     </div>
-<?php endforeach; ?>
+<?php endwhile;
+ ?>
+ <script src='js/cart.js'></script>

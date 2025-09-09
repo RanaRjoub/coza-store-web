@@ -231,25 +231,55 @@ function filter(value) {
     });
 }
 
+function category(value){
+fetch('category.php' ,{
+    method:'POST',
+    headers:{
+         'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: 'filter=' +encodeURIComponent(value)
+})
+.then(res=>res.text())
+.then(data=>{
+     document.getElementById('products').innerHTML = data;
+       
+})
+.catch(error=>{
+    console.log('error'+error);
+})
+console.log('done');
+}
 
-// document.addEventListener('DOMContentLoaded', function () {
-// document.getElementById('filterPrice').addEventListener('change',function(){
-//     const selectValue=this.value;
-//     fetch('filter_products.php' ,{
-//         method:'POST',
-//              headers: {
-//              'Content-Type': 'application/x-www-form-urlencoded'
-//         },
-//         body: 'filter = '+encodeURIComponent(selectValue)
-//     })
-//     .then(res=>res.text())
-//     .then(data=>{
-//           document.querySelector('.row').innerHTML = data;
-//     })
-    
-//     .catch(error=>{
-//         console.error('Error' + error);
-//     });
-    
-// });
-// });
+ const searchInput = document.getElementById('search');
+ const products = Array.from(document.querySelectorAll('.product__item'));
+
+ searchInput.addEventListener('keyup', function() {
+    const query = this.value.toLowerCase();
+
+     products.forEach(product => {
+        const nameEl = product.querySelector('h6');
+         const name = nameEl.textContent.toLowerCase();
+
+         if(name.includes(query)) {
+             product.parentElement.style.display = "block"; 
+         } else {
+             product.parentElement.style.display = "none";
+        }
+    });
+ });
+ function toggleProfileMenu(event) {
+    event.preventDefault(); 
+    const menu = document.getElementById('profileMenu');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+
+document.addEventListener('click', function(e) {
+    const container = document.querySelector('.profile-container');
+    if (!container.contains(e.target)) {
+        document.getElementById('profileMenu').style.display = 'none';
+    }
+});
+
+
+   

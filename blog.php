@@ -160,7 +160,7 @@
     </section>
     <!-- Breadcrumb Section End -->
 <?php
-include 'products.php';
+include 'blogs.php';
 ?>
     <!-- Blog Section Begin -->
     <section class="blog spad">

@@ -18,6 +18,7 @@ if (!isset($_SESSION['cart'])) {
                         $finalPrice=0;
                     }
     include 'cartnav.php';
+
     ?>
 <head>
     <meta charset="UTF-8">
@@ -56,7 +57,7 @@ if (!isset($_SESSION['cart'])) {
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__option">
             <div class="offcanvas__links">
-                 <a href="account.html">Sign in</a>
+                 <a href="register.php">Sign in</a>
                 <a href="#">FAQs</a>
             </div>
             <div class="offcanvas__top__hover">
@@ -69,7 +70,7 @@ if (!isset($_SESSION['cart'])) {
             </div>
         </div>
         <div class="offcanvas__nav__option">
-            <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+            <a href="#" class="search-switch"><img src="img/icon/user.png" alt=""></a>
             <a href="#"><img src="img/icon/heart.png" alt=""></a>
             <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
             <div class="price">$0.00</div>
@@ -94,7 +95,7 @@ if (!isset($_SESSION['cart'])) {
                     <div class="col-lg-6 col-md-5">
                         <div class="header__top__right">
                             <div class="header__top__links">
-                                <a href="account.html">Sign in</a>
+                                <a href="register.php">Sign in</a>
                                 <a href="#">FAQs</a>
                             </div>
                             <div class="header__top__hover">
@@ -125,7 +126,7 @@ if (!isset($_SESSION['cart'])) {
                             <li><a href="#">Pages</a>
                                 <ul class="dropdown">
                                     <li><a href="./about.html">About Us</a></li>
-                                    <li><a href="./shop-details.html">Shop Details</a></li>
+                                    <!-- <li><a href="./shop-details.html">Shop Details</a></li> -->
                                     <li><a href="./shopping-cart.php">Shopping Cart</a></li>
                                     <li><a href="./checkout.html">Check Out</a></li>
                                     <li><a href="./blog-details.html">Blog Details</a></li>
@@ -138,7 +139,16 @@ if (!isset($_SESSION['cart'])) {
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                        <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                         <div class="profile-container">
+        <a href="#" class="profile" onclick="toggleProfileMenu(event)">
+            <img src="img/icon/user.png" alt="">
+        </a>
+        <div class="profile-menu" id="profileMenu">
+            <a href="profile.php" id="profile">Profile</a>
+         
+            <a href="logout.php" id="login">Log out</a>
+        </div>
+    </div>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="shopping-cart.php"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span id="cart-count"><?=$totalQuantity?></span></a>
                         <div class="price" id="cart-total"><?=number_format($finalPrice,2)?></div>
@@ -206,7 +216,7 @@ if (!isset($_SESSION['cart'])) {
                 <div class="col-lg-7 offset-lg-4">
                     <div class="banner__item">
                         <div class="banner__item__pic">
-                            <img src="img/item2.jpg" width="457.5px" height="457.5px" alt="">
+                            <img src="img/product/item2.jpg" width="457.5px" height="457.5px" alt="">
                         </div>
                         <div class="banner__item__text">
                             <h2>Clothing Collections 2030</h2>
@@ -241,11 +251,7 @@ if (!isset($_SESSION['cart'])) {
     </section>
     <!-- Banner Section End -->
  <?php 
-                include "products.php";
-                usort($products ,function($a ,$b){
-                    return $b['count'] <=> $a['count'];
-                });
-                $part=array_slice($products , 0 ,4);
+               include "products.php";
                 ?>
                 
     <!-- Product Section Begin -->
@@ -262,17 +268,17 @@ if (!isset($_SESSION['cart'])) {
             </div>
             <div class="row product__filter">
                <?php 
-               foreach($part as $product):
+               foreach($products2 as $product):
                ?>
             
-                <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix <?=htmlspecialchars($product["category"])?>">
+                <div class="col-lg-3 col-md-6 col-sm-6 col-md-6 col-sm-6 mix <?=htmlspecialchars($product["category_name"])?>">
                     <div class="product__item">
                         
                         <div class="product__item__pic " >
-                            <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
+                            <img src="<?= htmlspecialchars($product['main_image']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
                             <?php
                             if(!empty($product['label'])): ?>
-                            <span class="label"><?= htmlspecialchars($product['label'])?></span>
+                            <span class="label"><?= htmlspecialchars($product['category_name'])?></span>
                             <?php endif; ?>
                              <ul class="product__hover">
                                 <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
@@ -283,11 +289,11 @@ if (!isset($_SESSION['cart'])) {
                         <div class="product__item__text">
                             <h6><?= htmlspecialchars($product['name']) ?></h6>
                              <form class="add-to-cart-form" method="post" action="addToCart.php" >
-                             <input type="hidden" name="id" value="<?= $product['id'] ?>">
+                             <input type="hidden" name="id" value="<?= $product['product_id'] ?>">
                              <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
                              <input type="hidden" name="price" value="<?= $product['price'] ?>">
-                             <input type="hidden" name="image" value="<?= $product['image'] ?>">
-                            <a class="add-cart"><button type="submit"  >Add to Cart</button></a>
+                             <input type="hidden" name="image" value="<?= $product['main_image'] ?>">
+                            <a class="add-cart"><button type="submit" style="margin-right:20px ; border:0px ; width:120px ; height:50px"   >Add to Cart</button></a>
                             </form>
                             
                             <div class="rating">
@@ -297,7 +303,7 @@ if (!isset($_SESSION['cart'])) {
                                 <i class="fa fa-star-o"></i>
                                 <i class="fa fa-star-o"></i>
                             </div>
-                            <h5><?= htmlspecialchars($product['price']) ?></h5>
+                            <h5>$<?= htmlspecialchars($product['price']) ?></h5>
                             <div class="product__color__select">
                                 <label for="pc-1">
                                     <input type="radio" id="pc-1">
@@ -407,6 +413,7 @@ if (!isset($_SESSION['cart'])) {
             </div>
             <div class="row">
                 <?php
+                include 'blogs.php';
                 usort($blogs ,function($a ,$b){
                     return strtotime($b['date'])<=>strtotime($a['date']);
                 });

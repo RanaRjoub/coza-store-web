@@ -7,7 +7,7 @@ const cartSubtotal = document.getElementById('cartSubtotal');
 function updateCartPrice(id, productPrice) {
     const section = document.getElementById(id);
     if (section) {
-        const currentTotal = parseFloat(section.textContent.replace('$', '').replace(',', '')) || 0;
+        const currentTotal = parseFloat(section.textContent.replace(',', '')) || 0; 
         const newTotal = currentTotal + productPrice;
         section.textContent = newTotal.toFixed(2);
     }
@@ -26,7 +26,7 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
             .then(data => {
                 const box = document.createElement('div');
                 const productName = form.querySelector('input[name="name"]').value;
-                const productPrice = parseFloat(form.querySelector('input[name="price"]').value.replace('$', '')) || 0;
+                const productPrice = parseFloat(form.querySelector('input[name="price"]').value)||0;
                 updateCartPrice('cartSum', productPrice);
                 updateCartPrice('cartSubtotal', productPrice);
                 updateCartPrice('cart-total', productPrice);
@@ -68,7 +68,7 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
                 }, 2000);
             })
             .catch(() => alert('an error occurred'));
-
+ 
 
     });
 

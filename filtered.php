@@ -17,7 +17,7 @@ foreach ($filterProducts as $product):
                 <form class="add-to-cart-form" method="post" action="addToCart.php">
                     <input type="hidden" name="id" value="<?= $product['id'] ?>">
                     <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
-                    <input type="hidden" name="price" value="<?= $product['price']  ?>">
+                    <input type="hidden" name="price" value="$<?= $product['price']  ?>">
                     <input type="hidden" name="image" value="<?= $product['image'] ?>">
                     <a class="add-cart"> <button type="submit">Add to Cart</button></a>
                 </form>
@@ -29,7 +29,7 @@ foreach ($filterProducts as $product):
                     <i class="fa fa-star-o"></i>
                     <i class="fa fa-star-o"></i>
                 </div>
-                <h5><?= htmlspecialchars($product['price']) ?></h5>
+                <h5><?= '$'. htmlspecialchars($product['price']) ?></h5>
                 <div class="product__color__select">
                     <label for="pc-4">
                         <input type="radio" id="pc-4">

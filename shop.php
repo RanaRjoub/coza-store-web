@@ -18,6 +18,24 @@
                     }
     include 'cartnav.php';
     ?>
+    <?php
+   include 'products.php';
+    ?>
+    <?php
+    include 'db.php';
+    $search=$_GET['search'] ??'';
+    $searchParam="%$search%";
+    $sql="SELECT * FROM products WHERE name LIKE  ? OR description LIKE ? ";
+    $stmt=$conn->prepare($sql);
+    $stmt->bind_param("ss",$searchParam,$searchParam);
+    $stmt->execute();
+    $result=$stmt->get_result();
+    $products=[];
+    while($row=$result->fetch_assoc()){
+        $products[]=$row;
+    }
+    $conn->close();
+       ?>
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Male_Fashion Template">
@@ -53,7 +71,7 @@
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__option">
             <div class="offcanvas__links">
-                <a href="account.html">Sign in</a>
+                <a href="register.php">Sign in</a>
                 <a href="#">FAQs</a>
             </div>
             <div class="offcanvas__top__hover">
@@ -172,8 +190,8 @@
                 <div class="col-lg-3">
                     <div class="shop__sidebar">
                         <div class="shop__sidebar__search">
-                            <form action="#">
-                                <input type="text" placeholder="Search...">
+                            <form id='searchForm'>
+                                <input type="text" id="search" placeholder="Search...">
                                 <button type="submit"><span class="icon_search"></span></button>
                             </form>
                         </div>
@@ -186,17 +204,17 @@
                                     <div id="collapseOne" class="collapse show" data-parent="#accordionExample">
                                         <div class="card-body">
                                             <div class="shop__sidebar__categories">
-                                                <ul class="nice-scroll">
-                                                    <li><a href="#">Men (20)</a></li>
-                                                    <li><a href="#">Women (20)</a></li>
-                                                    <li><a href="#">Bags (20)</a></li>
-                                                    <li><a href="#">Clothing (20)</a></li>
-                                                    <li><a href="#">Shoes (20)</a></li>
-                                                    <li><a href="#">Accessories (20)</a></li>
-                                                    <li><a href="#">Kids (20)</a></li>
-                                                    <li><a href="#">Kids (20)</a></li>
-                                                    <li><a href="#">Kids (20)</a></li>
+                                                <ul class="nice-scroll" id="categories">
+                                                    <li data-category="Men" onclick="category(this.dataset.category)"><a href="#">Men (20)</a></li>
+                                                    <li data-category="Women"  onclick="category(this.dataset.category)"><a href="#">Women (20)</a></li>
+                                                    <li data-category="Bags"  onclick="category(this.dataset.category)"><a href="#">Bags (20)</a></li>
+                                                    <li data-category="Clothing"  onclick="category(this.dataset.category)"><a href="#">Clothing (20)</a></li>
+                                                    <li data-category="Shoes"  onclick="category(this.dataset.category)"><a href="#">Shoes (20)</a></li>
+                                                    <li data-category="Accessories"  onclick="category(this.dataset.category)"><a href="#">Accessories (20)</a></li>
+                                                    <li data-category="Kids"  onclick="category(this.dataset.category)"><a href="#">Kids (20)</a></li>
+                                                    
                                                 </ul>
+                                              
                                             </div>
                                         </div>
                                     </div>
@@ -225,9 +243,9 @@
                                     <div id="collapseThree" class="collapse show" data-parent="#accordionExample">
                                         <div class="card-body">
                                             <div class="shop__sidebar__price">
-                                                <ul>
-                                                    <li><a href="#">$0.00 - $50.00</a></li>
-                                                    <li><a href="#">$50.00 - $100.00</a></li>
+                                                <ul id="filterPrice" onchange="filter(this.value)">
+                                                    <li><a href="#" value="0_50">$0.00 - $50.00</a></li>
+                                                    <li><a href="#" value="50_100">$50.00 - $100.00</a></li>
                                                     <li><a href="#">$100.00 - $150.00</a></li>
                                                     <li><a href="#">$150.00 - $200.00</a></li>
                                                     <li><a href="#">$200.00 - $250.00</a></li>
@@ -344,6 +362,7 @@
                                 <div class="shop__product__option__right">
                                     <p>Sort by Price:</p>
                                     <select id="filterPrice" onchange="filter(this.value)">
+                                        <option value="default">choose filter</option>
                                         <option value="low_high">Low To High</option>
                                         <option value="high_low">High To Low</option>
                                         <option value="0_50">$0 - $50</option>
@@ -355,26 +374,28 @@
                             </div>
                         </div>
                     </div>
-                    <div id="products" class="row">
-    <?php include 'products.php'; ?>
+                <div id="products" class="row">
+    <?php include 'products.php'; 
+     ?>
     <?php foreach ($products as $product): ?>
         <div class="col-lg-4 col-md-6 col-sm-6">
             <div class="product__item">
-                <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($product['image']) ?>">
+                <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($product['main_image']) ?>">
                     <ul class="product__hover">
                         <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
                         <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
-                        <li><a href="#"><img src="img/icon/search.png" alt=""></a></li>
+                        <li> <a href="shop-details.php?id=<?=htmlspecialchars($product['product_id'])?>"><img src="img/icon/search.png" alt=""></a></li>
                     </ul>
-                </div>
+            </div>
+                 
                 <div class="product__item__text">
                     <h6><?= htmlspecialchars($product['name']) ?></h6>
                     <form class="add-to-cart-form" method="post" action="addToCart.php">
-                        <input type="hidden" name="id" value="<?= $product['id'] ?>">
+                        <input type="hidden" name="id" value="<?= $product['product_id'] ?>">
                         <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
-                        <input type="hidden" name="price" value="<?= $product['price'] ?>">
-                        <input type="hidden" name="image" value="<?= $product['image'] ?>">
-                        <a class="add-cart"> <button type="submit">Add to Cart</button></a>
+                        <input type="hidden" name="price" value="<?= $product['price']?>">
+                      <input type="hidden" name="image" value="<?= $product['main_image'] ?>">
+                        <a class="add-cart"> <button type="submit" style="margin-right:20px ; border:0px ; width:120px ; height:50px" >Add to Cart</button></a>
                     </form>
 
                     <div class="rating">
@@ -384,7 +405,7 @@
                         <i class="fa fa-star-o"></i>
                         <i class="fa fa-star-o"></i>
                     </div>
-                    <h5><?= htmlspecialchars($product['price']) ?></h5>
+                    <h5> $<?= htmlspecialchars($product['price']) ?></h5>
                     <div class="product__color__select">
                         <label for="pc-4"><input type="radio" id="pc-4"></label>
                         <label class="active black" for="pc-5"><input type="radio" id="pc-5"></label>

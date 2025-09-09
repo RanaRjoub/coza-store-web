@@ -1,5 +1,30 @@
 <!DOCTYPE html>
   <?php
+include 'db.php';
+$images=[];
+ $product=null;
+if(isset($_GET['id'])){
+    $id=$_GET['id'];
+   $stmt=$conn->prepare("SELECT * FROM products WHERE product_id = ?");
+   $stmt->bind_param("i",$id);
+   $stmt->execute();
+   $productResult=$stmt->get_result();
+   $product=$productResult->fetch_assoc();
+
+   $stmt2=$conn->prepare("SELECT * FROM  products_images pI WHERE product_id = ?");
+   $stmt2->bind_param("i",$id);
+   $stmt2->execute();
+   $imagesResult=$stmt2->get_result();
+   while($row=$imagesResult->fetch_assoc()){
+    $images[]=$row['image'];
+   }
+$stmt->close();
+$stmt2->close();
+
+
+}
+$conn->close();
+
     session_start();
     if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
@@ -54,7 +79,7 @@
     <div class="offcanvas-menu-wrapper">
         <div class="offcanvas__option">
             <div class="offcanvas__links">
-                <a href="#">Sign in</a>
+                <a href="register.php">Sign in</a>
                 <a href="#">FAQs</a>
             </div>
             <div class="offcanvas__top__hover">
@@ -118,7 +143,7 @@
                 <div class="col-lg-6 col-md-6">
                     <nav class="header__menu mobile-menu">
                         <ul>
-                            <li><a href="./inex.php">Home</a></li>
+                            <li><a href="./index.php">Home</a></li>
                             <li class="active"><a href="./shop.php">Shop</a></li>
                             <li><a href="#">Pages</a>
                                 <ul class="dropdown">
@@ -138,7 +163,7 @@
                     <div class="header__nav__option">
                         <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
-                        <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span><?= $totalQuantity ?></span></a>
+                        <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span id="cart-count"><?= $totalQuantity ?></span></a>
                         <div class="price"><?= number_format($finalPrice,2) ?></div>
                     </div>
                 </div>
@@ -164,55 +189,26 @@
                 <div class="row">
                     <div class="col-lg-3 col-md-3">
                         <ul class="nav nav-tabs" role="tablist">
+                            <?php foreach($images as $index=>$image): ?>
                             <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="img/shop-details/thumb-1.png">
+                                <a class="nav-link <?= $index===0?'active':''?>" data-toggle="tab" href="#tabs-<?= $index+1 ?>" role="tab">
+                                    <div class="product__thumb__pic set-bg" data-setbg="<?= htmlspecialchars($image)?> ">
                                     </div>
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="img/shop-details/thumb-2.png">
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="img/shop-details/thumb-3.png">
-                                    </div>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#tabs-4" role="tab">
-                                    <div class="product__thumb__pic set-bg" data-setbg="img/shop-details/thumb-4.png">
-                                        <i class="fa fa-play"></i>
-                                    </div>
-                                </a>
-                            </li>
+        
+                            <?php endforeach ?>
                         </ul>
                     </div>
                     <div class="col-lg-6 col-md-9">
                         <div class="tab-content">
-                            <div class="tab-pane active" id="tabs-1" role="tabpanel">
+                            <?php foreach($images as $index=>$image): ?>
+                            <div class="tab-pane <?= $index===0 ? 'active' : '' ?>" id="tabs-<?= $index+1 ?>" role="tabpanel">
                                 <div class="product__details__pic__item">
-                                    <img src="img/shop-details/product-big-2.png" alt="">
+                                    <img src="<?= htmlspecialchars($image)?>"  width=" 457px" height="480px" alt="">
                                 </div>
                             </div>
-                            <div class="tab-pane" id="tabs-2" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="img/shop-details/product-big-3.png" alt="">
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tabs-3" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="img/shop-details/product-big.png" alt="">
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="tabs-4" role="tabpanel">
-                                <div class="product__details__pic__item">
-                                    <img src="img/shop-details/product-big-4.png" alt="">
-                                    <a href="https://www.youtube.com/watch?v=8PJ3_p7VqHw&list=RD8PJ3_p7VqHw&start_radio=1" class="video-popup"><i class="fa fa-play"></i></a>
-                                </div>
+                            <?php endforeach ?>
                             </div>
                         </div>
                     </div>
@@ -224,7 +220,7 @@
                 <div class="row d-flex justify-content-center">
                     <div class="col-lg-8">
                         <div class="product__details__text">
-                            <h4>Hooded thermal anorak</h4>
+                            <h4><?= htmlspecialchars($product['name'])?></h4>
                             <div class="rating">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -233,10 +229,8 @@
                                 <i class="fa fa-star-o"></i>
                                 <span> - 5 Reviews</span>
                             </div>
-                            <h3>$270.00 <span>70.00</span></h3>
-                            <p>Coat with quilted lining and an adjustable hood. Featuring long sleeves with adjustable
-                                cuff tabs, adjustable asymmetric hem with elastic side tabs and a front zip fastening
-                            with placket.</p>
+                            <h3>$<?= htmlspecialchars($product['price'])?> <span>70.00</span></h3>
+                            <p><?= $product['description']?></p>
                             <div class="product__details__option">
                                 <div class="product__details__option__size">
                                     <span>Size:</span>
@@ -278,7 +272,14 @@
                                         <input type="text" value="1">
                                     </div>
                                 </div>
-                                <a href="#" class="primary-btn">add to cart</a>
+                             <form class="add-to-cart-form" method="post" action="addToCart.php" >
+                             <input type="hidden" name="id" value="<?= $product['product_id'] ?>">
+                             <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
+                             <input type="hidden" name="price" value="<?= $product['price'] ?>">
+                             <input type="hidden" name="image" value="<?= $product['main_image'] ?>">
+                             <br>
+                            <a class="add-cart"><button type="submit" style="margin-right:20px ; border:0px ; width:120px ; height:50px" >Add to Cart</button></a>
+                            </form>
                             </div>
                             <div class="product__details__btns__option">
                                 <a href="#"><i class="fa fa-heart"></i> add to wishlist</a>

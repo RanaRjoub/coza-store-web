@@ -13,6 +13,19 @@
                     }
     include 'cartnav.php';
     ?>
+    <?php
+   
+if (session_status() == PHP_SESSION_NONE) session_start();
+if (empty($_SESSION['user_id'])) {
+    header('Location: register.php'); 
+    exit;
+}
+
+?>
+<h2>Checkout</h2>
+<p>مرحبا <?php echo htmlspecialchars($_SESSION['username']); ?>، أكمل عملية الدفع</p>
+
+    ?>
 <html lang="zxx">
 
 <head>
