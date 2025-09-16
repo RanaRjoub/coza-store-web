@@ -2,7 +2,7 @@ document.querySelectorAll('.close').forEach(button => {
     button.addEventListener('click', function(e) {
         e.preventDefault();
 
-        const id = this.dataset.id.trim(); // get id from button
+        const id = this.dataset.id.trim(); 
 
         fetch('remove_product.php', {
             method: 'POST',

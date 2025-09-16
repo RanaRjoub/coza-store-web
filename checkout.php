@@ -1,31 +1,16 @@
 <!DOCTYPE html>
-  <?php
-    session_start();
-      $totalPrice=0;
-                    foreach($_SESSION['cart'] as $item){
-                        $itemTotal=floatval($item['price'])*intval($item['quantity']);
-                        $totalPrice+=$itemTotal;
-                    }
-                    $discount=$_SESSION['discount']??0;
-                    $finalPrice=$totalPrice-$discount;
-                    if($finalPrice<0){
-                        $finalPrice=0;
-                    }
-    include 'cartnav.php';
-    ?>
-    <?php
-   
+<?php
 if (session_status() == PHP_SESSION_NONE) session_start();
+include 'db.php';
+include 'products.php';
+include 'cartnav.php';
 if (empty($_SESSION['user_id'])) {
-    header('Location: register.php'); 
+    header('Location: register.php');
     exit;
 }
 
 ?>
-<h2>Checkout</h2>
-<p>مرحبا <?php echo htmlspecialchars($_SESSION['username']); ?>، أكمل عملية الدفع</p>
 
-    ?>
 <html lang="zxx">
 
 <head>
@@ -38,7 +23,7 @@ if (empty($_SESSION['user_id'])) {
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
+        rel="stylesheet">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -144,10 +129,19 @@ if (empty($_SESSION['user_id'])) {
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                        <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                        <div class="profile-container">
+                            <a href="#" class="profile" onclick="toggleProfileMenu(event)">
+                                <img src="img/icon/user.png" alt="">
+                            </a>
+                            <div class="profile-menu" id="profileMenu">
+                                <a href="profile.php" id="profile">Profile</a>
+
+                                <a href="logout.php" id="login">Log out</a>
+                            </div>
+                        </div>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span><?= $totalQuantity ?></span></a>
-                        <div class="price"><?= number_format($finalPrice,2) ?></div>
+                        <div class="price"><?= number_format($finalPrice, 2) ?></div>
                     </div>
                 </div>
             </div>
@@ -179,85 +173,61 @@ if (empty($_SESSION['user_id'])) {
     <section class="checkout spad">
         <div class="container">
             <div class="checkout__form">
-                <form action="#">
+                <form method="post" action="place-order.php" id="placeorder">
                     <div class="row">
                         <div class="col-lg-8 col-md-6">
                             <h6 class="coupon__code"><span class="icon_tag_alt"></span> Have a coupon? <a href="#">Click
-                            here</a> to enter your code</h6>
+                                    here</a> to enter your code</h6>
                             <h6 class="checkout__title">Billing Details</h6>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Fist Name<span>*</span></p>
-                                        <input type="text">
+                                        <input type="text" name="fname" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Last Name<span>*</span></p>
-                                        <input type="text">
+                                        <input type="text" name="lname" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="checkout__input">
                                 <p>Country<span>*</span></p>
-                                <input type="text">
+                                <input type="text" name="country"required>
                             </div>
                             <div class="checkout__input">
                                 <p>Address<span>*</span></p>
-                                <input type="text" placeholder="Street Address" class="checkout__input__add">
-                                <input type="text" placeholder="Apartment, suite, unite ect (optinal)">
+                                <input type="text" placeholder="Street Address" class="checkout__input__add" name="address1">
+                                <input type="text" placeholder="Apartment, suite, unite ect (optinal)" name="address2" optional>
                             </div>
                             <div class="checkout__input">
                                 <p>Town/City<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="checkout__input">
-                                <p>Country/State<span>*</span></p>
-                                <input type="text">
+                                <input type="text" name="city" required>
                             </div>
                             <div class="checkout__input">
                                 <p>Postcode / ZIP<span>*</span></p>
-                                <input type="text">
+                                <input type="text" name="zip" optional>
                             </div>
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Phone<span>*</span></p>
-                                        <input type="text">
+                                        <input type="text" name="phone" required>
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
                                     <div class="checkout__input">
                                         <p>Email<span>*</span></p>
-                                        <input type="text">
+                                        <input type="text" name="email" required>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="checkout__input__checkbox">
-                                <label for="acc">
-                                    Create an account?
-                                    <input type="checkbox" id="acc">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <p>Create an account by entering the information below. If you are a returning customer
-                                please login at the top of the page</p>
-                            </div>
-                            <div class="checkout__input">
-                                <p>Account Password<span>*</span></p>
-                                <input type="text">
-                            </div>
-                            <div class="checkout__input__checkbox">
-                                <label for="diff-acc">
-                                    Note about your order, e.g, special noe for delivery
-                                    <input type="checkbox" id="diff-acc">
-                                    <span class="checkmark"></span>
-                                </label>
                             </div>
                             <div class="checkout__input">
                                 <p>Order notes<span>*</span></p>
                                 <input type="text"
-                                placeholder="Notes about your order, e.g. special notes for delivery.">
+                                    placeholder="Notes about your order, e.g. special notes for delivery." name="notes" optional>
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -265,12 +235,20 @@ if (empty($_SESSION['user_id'])) {
                                 <h4 class="order__title">Your order</h4>
                                 <div class="checkout__order__products">Product <span>Total</span></div>
                                 <ul class="checkout__total__products">
-                                    <li>01. Vanilla salted caramel <span>$ 300.0</span></li>
-                                   
+
+                                    <?php
+                                    $i = 1;
+                                    foreach ($cart as $items):
+                                        $price = isset($items['price']) ? (float)$items['price'] : 0;
+                                        $quantity = isset($items['quantity']) ? (int)$items['quantity'] : 1;
+                                        $total = $price * $quantity;
+                                    ?>
+                                        <li><?= $i++ . "." . htmlspecialchars($items['name']) ?><span>$<?= htmlspecialchars($items['price']) ?></span></li>
+                                    <?php endforeach ?>
                                 </ul>
                                 <ul class="checkout__total__all">
-                                    <li>Subtotal <span>$750.99</span></li>
-                                    <li>Total <span>$750.99</span></li>
+                                    <li>Subtotal <span>$<?= number_format($finalPrice, 2) ?></span></li>
+                                    <li>Total <span>$<?= number_format($finalPrice, 2) ?></span></li>
                                 </ul>
                                 <div class="checkout__input__checkbox">
                                     <label for="acc-or">
@@ -280,7 +258,7 @@ if (empty($_SESSION['user_id'])) {
                                     </label>
                                 </div>
                                 <p>Lorem ipsum dolor sit amet, consectetur adip elit, sed do eiusmod tempor incididunt
-                                ut labore et dolore magna aliqua.</p>
+                                    ut labore et dolore magna aliqua.</p>
                                 <div class="checkout__input__checkbox">
                                     <label for="payment">
                                         Check Payment
@@ -362,7 +340,7 @@ if (empty($_SESSION['user_id'])) {
                                 document.write(new Date().getFullYear());
                             </script>2020
                             All rights reserved | This template is made with <i class="fa fa-heart-o"
-                            aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
                         </p>
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     </div>
@@ -394,6 +372,7 @@ if (empty($_SESSION['user_id'])) {
     <script src="js/mixitup.min.js"></script>
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>
+     <script src="js/placeOrder.js"></script>
 </body>
 
 </html>

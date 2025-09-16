@@ -1,20 +1,6 @@
 <!DOCTYPE html>
     <?php
     session_start();
-    if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
-
-      $totalPrice=0;
-                    foreach($_SESSION['cart'] as $item){
-                        $itemTotal=floatval($item['price'])*intval($item['quantity']);
-                        $totalPrice+=$itemTotal;
-                    }
-                    $discount=$_SESSION['discount']??0;
-                    $finalPrice=$totalPrice-$discount;
-                    if($finalPrice<0){
-                        $finalPrice=0;
-                    }
     include 'cartnav.php';
     ?>
 <html lang="zxx">
@@ -135,7 +121,16 @@
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                        <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                                         <div class="profile-container">
+        <a href="#" class="profile" onclick="toggleProfileMenu(event)">
+            <img src="img/icon/user.png" alt="">
+        </a>
+        <div class="profile-menu" id="profileMenu">
+            <a href="profile.php" id="profile">Profile</a>
+         
+            <a href="logout.php" id="login">Log out</a>
+        </div>
+    </div>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span><?= $totalQuantity ?></span></a>
                         <div class="price"><?= number_format($finalPrice,2)?></div>

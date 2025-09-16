@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 
-        <?php session_start(); 
-        
-           
-                   if(!isset($_SESSION['cart'])){
-                         $_SESSION['cart']=[];
-                }
-                     $totalPrice=0;
-                    foreach($_SESSION['cart'] as $item){
-                        $itemTotal=floatval($item['price'])*intval($item['quantity']);
-                        $totalPrice+=$itemTotal;
-                    }
-                    $discount=$_SESSION['discount']??0;
-                    $finalPrice=$totalPrice-$discount;
-                    if($finalPrice<0){
-                        $finalPrice=0;
-                    }
-                    include 'cartnav.php';
-        ?>
+<?php session_start();
+include 'cartnav.php';
+if($_SERVER['REQUEST_METHOD']=="POST"){
+    $name=$_POST['name']??'';
+    $email=$_POST['email']??'';
+    $message=$_POST['message']??'';
+    if(!empty($name)||!empty($email)||!empty($message)){
+        $to='rjoubrana@gmail.com';
+        $subject="new content message from $name";
+        $body="Name:$name\n Email:$email \n Message:$message";
+        $headers="From:$email";
+    if(mail($to,$subject,$body,$headers)){
+        echo "message sent successfully";
+    }
+    else{
+        echo "faild to send message";
+    }
+}
+else{
+    echo "please fill all fields";
+}
+}
+?>
 <html lang="zxx">
 
 <head>
@@ -136,10 +141,19 @@
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                         <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                        <div class="profile-container">
+                            <a href="#" class="profile" onclick="toggleProfileMenu(event)">
+                                <img src="img/icon/user.png" alt="">
+                            </a>
+                            <div class="profile-menu" id="profileMenu">
+                                <a href="profile.php" id="profile">Profile</a>
+
+                                <a href="logout.php" id="login">Log out</a>
+                            </div>
+                        </div>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span><?= $totalQuantity ?></span></a>
-                        <div class="price" id="cart-total"><?= number_format($finalPrice,2) ?></div>
+                        <div class="price" id="cart-total"><?= number_format($finalPrice, 2) ?></div>
                     </div>
                 </div>
             </div>
@@ -180,20 +194,21 @@
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <div class="contact__form">
-                        <form action="#">
+                        <form id="contactForm" method="post">
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <input type="text" placeholder="Name">
+                                    <input type="text" placeholder="Name" name="name" required>
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="text" placeholder="Email">
+                                    <input type="text" placeholder="Email" name="email" required>
                                 </div>
                                 <div class="col-lg-12">
-                                    <textarea placeholder="Message"></textarea>
+                                    <textarea placeholder="Message" name="message" required></textarea>
                                     <button type="submit" class="site-btn">Send Message</button>
                                 </div>
                             </div>
                         </form>
+                           <div id="formMessage" style="margin-top:15px;"></div>
                     </div>
                 </div>
             </div>

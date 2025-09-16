@@ -1,41 +1,23 @@
 <!DOCTYPE html>
 <html lang="zxx">
-    <?php
-    session_start();
-    if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
+<?php
+if (session_status() == PHP_SESSION_NONE) session_start();
+include 'db.php';
+include 'cartnav.php';
+$search = $_GET['search'] ?? '';
+$searchParam = "%$search%";
+$sql = "SELECT * FROM products WHERE name LIKE  ? OR description LIKE ? ";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("ss", $searchParam, $searchParam);
+$stmt->execute();
+$result = $stmt->get_result();
+$products = [];
+while ($row = $result->fetch_assoc()) {
+    $products[] = $row;
 }
+$conn->close();
+?>
 
-      $totalPrice=0;
-                    foreach($_SESSION['cart'] as $item){
-                        $itemTotal=floatval($item['price'])*intval($item['quantity']);
-                        $totalPrice+=$itemTotal;
-                    }
-                    $discount=$_SESSION['discount']??0;
-                    $finalPrice=$totalPrice-$discount;
-                    if($finalPrice<0){
-                        $finalPrice=0;
-                    }
-    include 'cartnav.php';
-    ?>
-    <?php
-   include 'products.php';
-    ?>
-    <?php
-    include 'db.php';
-    $search=$_GET['search'] ??'';
-    $searchParam="%$search%";
-    $sql="SELECT * FROM products WHERE name LIKE  ? OR description LIKE ? ";
-    $stmt=$conn->prepare($sql);
-    $stmt->bind_param("ss",$searchParam,$searchParam);
-    $stmt->execute();
-    $result=$stmt->get_result();
-    $products=[];
-    while($row=$result->fetch_assoc()){
-        $products[]=$row;
-    }
-    $conn->close();
-       ?>
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Male_Fashion Template">
@@ -46,7 +28,7 @@
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
+        rel="stylesheet">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -61,7 +43,7 @@
 
 <body>
     <!-- Page Preloder -->
-   
+
     <div id="preloder">
         <div class="loader"></div>
     </div>
@@ -153,10 +135,19 @@
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                        <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                        <div class="profile-container">
+                            <a href="#" class="profile" onclick="toggleProfileMenu(event)">
+                                <img src="img/icon/user.png" alt="">
+                            </a>
+                            <div class="profile-menu" id="profileMenu">
+                                <a href="profile.php" id="profile">Profile</a>
+
+                                <a href="logout.php" id="login">Log out</a>
+                            </div>
+                        </div>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="shopping-cart.php"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span id="cart-count"><?= $totalQuantity ?></span></a>
-                        <div class="price" id="cart-total"><?= number_format($finalPrice,2)?></div>
+                        <div class="price" id="cart-total"><?= number_format($finalPrice, 2) ?></div>
                     </div>
                 </div>
             </div>
@@ -206,15 +197,15 @@
                                             <div class="shop__sidebar__categories">
                                                 <ul class="nice-scroll" id="categories">
                                                     <li data-category="Men" onclick="category(this.dataset.category)"><a href="#">Men (20)</a></li>
-                                                    <li data-category="Women"  onclick="category(this.dataset.category)"><a href="#">Women (20)</a></li>
-                                                    <li data-category="Bags"  onclick="category(this.dataset.category)"><a href="#">Bags (20)</a></li>
-                                                    <li data-category="Clothing"  onclick="category(this.dataset.category)"><a href="#">Clothing (20)</a></li>
-                                                    <li data-category="Shoes"  onclick="category(this.dataset.category)"><a href="#">Shoes (20)</a></li>
-                                                    <li data-category="Accessories"  onclick="category(this.dataset.category)"><a href="#">Accessories (20)</a></li>
-                                                    <li data-category="Kids"  onclick="category(this.dataset.category)"><a href="#">Kids (20)</a></li>
-                                                    
+                                                    <li data-category="Women" onclick="category(this.dataset.category)"><a href="#">Women (20)</a></li>
+                                                    <li data-category="Bags" onclick="category(this.dataset.category)"><a href="#">Bags (20)</a></li>
+                                                    <li data-category="Clothing" onclick="category(this.dataset.category)"><a href="#">Clothing (20)</a></li>
+                                                    <li data-category="Shoes" onclick="category(this.dataset.category)"><a href="#">Shoes (20)</a></li>
+                                                    <li data-category="Accessories" onclick="category(this.dataset.category)"><a href="#">Accessories (20)</a></li>
+                                                    <li data-category="Kids" onclick="category(this.dataset.category)"><a href="#">Kids (20)</a></li>
+
                                                 </ul>
-                                              
+
                                             </div>
                                         </div>
                                     </div>
@@ -368,58 +359,58 @@
                                         <option value="0_50">$0 - $50</option>
                                         <option value="50_100">$50 - $100</option>
                                     </select>
-                
-                                   
+
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                <div id="products" class="row">
-    <?php include 'products.php'; 
-     ?>
-    <?php foreach ($products as $product): ?>
-        <div class="col-lg-4 col-md-6 col-sm-6">
-            <div class="product__item">
-                <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($product['main_image']) ?>">
-                    <ul class="product__hover">
-                        <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
-                        <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
-                        <li> <a href="shop-details.php?id=<?=htmlspecialchars($product['product_id'])?>"><img src="img/icon/search.png" alt=""></a></li>
-                    </ul>
-            </div>
-                 
-                <div class="product__item__text">
-                    <h6><?= htmlspecialchars($product['name']) ?></h6>
-                    <form class="add-to-cart-form" method="post" action="addToCart.php">
-                        <input type="hidden" name="id" value="<?= $product['product_id'] ?>">
-                        <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
-                        <input type="hidden" name="price" value="<?= $product['price']?>">
-                      <input type="hidden" name="image" value="<?= $product['main_image'] ?>">
-                        <a class="add-cart"> <button type="submit" style="margin-right:20px ; border:0px ; width:120px ; height:50px" >Add to Cart</button></a>
-                    </form>
+                    <div id="products" class="row">
+                        <?php include 'products.php';
+                        ?>
+                        <?php foreach ($products as $product): ?>
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+                                    <div class="product__item__pic set-bg" data-setbg="<?= htmlspecialchars($product['main_image']) ?>">
+                                        <ul class="product__hover">
+                                            <li><a href="#"><img src="img/icon/heart.png" alt=""></a></li>
+                                            <li><a href="#"><img src="img/icon/compare.png" alt=""> <span>Compare</span></a></li>
+                                            <li> <a href="shop-details.php?id=<?= htmlspecialchars($product['product_id']) ?>"><img src="img/icon/search.png" alt=""></a></li>
+                                        </ul>
+                                    </div>
 
-                    <div class="rating">
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                        <i class="fa fa-star-o"></i>
-                    </div>
-                    <h5> $<?= htmlspecialchars($product['price']) ?></h5>
-                    <div class="product__color__select">
-                        <label for="pc-4"><input type="radio" id="pc-4"></label>
-                        <label class="active black" for="pc-5"><input type="radio" id="pc-5"></label>
-                        <label class="grey" for="pc-6"><input type="radio" id="pc-6"></label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
-</div>
+                                    <div class="product__item__text">
+                                        <h6><?= htmlspecialchars($product['name']) ?></h6>
+                                        <form class="add-to-cart-form" method="post" action="addToCart.php">
+                                            <input type="hidden" name="id" value="<?= $product['product_id'] ?>">
+                                            <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
+                                            <input type="hidden" name="price" value="<?= $product['price'] ?>">
+                                            <input type="hidden" name="image" value="<?= $product['main_image'] ?>">
+                                            <a class="add-cart"> <button type="submit" style="margin-right:20px ; border:0px ; width:120px ; height:50px">Add to Cart</button></a>
+                                        </form>
 
-                    
-                         <div class="col-lg-12">
-                    <div class="row">
+                                        <div class="rating">
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                            <i class="fa fa-star-o"></i>
+                                        </div>
+                                        <h5> $<?= htmlspecialchars($product['price']) ?></h5>
+                                        <div class="product__color__select">
+                                            <label for="pc-4"><input type="radio" id="pc-4"></label>
+                                            <label class="active black" for="pc-5"><input type="radio" id="pc-5"></label>
+                                            <label class="grey" for="pc-6"><input type="radio" id="pc-6"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+
+                    <div class="col-lg-12">
+                        <div class="row">
                             <div class="product__pagination">
                                 <a class="active" href="#">1</a>
                                 <a href="#">2</a>
@@ -492,7 +483,7 @@
                                 document.write(new Date().getFullYear());
                             </script>2020
                             All rights reserved | This template is made with <i class="fa fa-heart-o"
-                            aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
                         </p>
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     </div>

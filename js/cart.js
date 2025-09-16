@@ -62,11 +62,11 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
                 box.appendChild(icon);
                 box.appendChild(message);
                 document.body.appendChild(box);
-
                 setTimeout(() => {
                     box.remove();
                 }, 2000);
             })
+            
             .catch(() => alert('an error occurred'));
  
 

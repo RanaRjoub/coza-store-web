@@ -252,6 +252,7 @@ console.log('done');
 
  const searchInput = document.getElementById('search');
  const products = Array.from(document.querySelectorAll('.product__item'));
+ const cartTable = document.querySelector('.shopping__cart__table');
 
  searchInput.addEventListener('keyup', function() {
     const query = this.value.toLowerCase();
@@ -266,6 +267,7 @@ console.log('done');
              product.parentElement.style.display = "none";
         }
     });
+     if(cartTable) cartTable.style.display = 'block';
  });
  function toggleProfileMenu(event) {
     event.preventDefault(); 
@@ -276,10 +278,14 @@ console.log('done');
 
 document.addEventListener('click', function(e) {
     const container = document.querySelector('.profile-container');
-    if (!container.contains(e.target)) {
+    if (container && !container.contains(e.target))  {
         document.getElementById('profileMenu').style.display = 'none';
     }
 });
+function togglePasswordForm(){
+    const form=document.getElementById("passwordForm");
+    form.style.display=(form.style.display==='block')?'none' :'block';
+}
 
 
    

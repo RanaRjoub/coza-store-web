@@ -54,7 +54,7 @@ foreach ($filterProducts as $product):
                     <input type="hidden" name="name" value="<?= htmlspecialchars($product['name']) ?>">
                     <input type="hidden" name="price" value="<?= $product['price'] ?>">
                     <input type="hidden" name="image" value="<?= $product['main_image'] ?>">
-                    <a class="add-cart"> <button type="submit">Add to Cart</button></a>
+                     <a class="add-cart"> <button type="submit" style="margin-right:20px ; border:0px ; width:120px ; height:50px">Add to Cart</button></a>
                 </form>
 
                 <div class="rating">

@@ -1,22 +1,9 @@
 <!DOCTYPE html>
 
-        <?php session_start(); 
-        
-           
-                   if(!isset($_SESSION['cart'])){
-                         $_SESSION['cart']=[];
-                }
-                     $totalPrice=0;
-                    foreach($_SESSION['cart'] as $item){
-                        $itemTotal=floatval($item['price'])*intval($item['quantity']);
-                        $totalPrice+=$itemTotal;
-                    }
-                    $discount=$_SESSION['discount']??0;
-                    $finalPrice=$totalPrice-$discount;
-                    if($finalPrice<0){
-                        $finalPrice=0;
-                    }
-        ?>
+<?php session_start();
+include 'db.php';
+include 'cartnav.php';
+?>
 <html lang="zxx">
 
 <head>
@@ -29,7 +16,7 @@
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap"
-    rel="stylesheet">
+        rel="stylesheet">
 
     <!-- Css Styles -->
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
@@ -41,6 +28,8 @@
     <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
+
+
 
 <body>
     <!-- Page Preloder -->
@@ -69,7 +58,7 @@
         <div class="offcanvas__nav__option">
             <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
             <a href="#"><img src="img/icon/heart.png" alt=""></a>
-            <a href="#"><img src="img/icon/cart.png"  alt=""> <span>0</span></a>
+            <a href="#"><img src="img/icon/cart.png" alt=""> <span>0</span></a>
             <div class="price">$0.00</div>
         </div>
         <div id="mobile-menu-wrap"></div>
@@ -108,9 +97,7 @@
                 </div>
             </div>
         </div>
-          <?php
-     include 'cartnav.php';
-     ?>
+
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-3">
@@ -139,11 +126,20 @@
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                        <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                        <div class="profile-container">
+                            <a href="#" class="profile" onclick="toggleProfileMenu(event)">
+                                <img src="img/icon/user.png" alt="">
+                            </a>
+                            <div class="profile-menu" id="profileMenu">
+                                <a href="profile.php" id="profile">Profile</a>
+
+                                <a href="logout.php" id="login">Log out</a>
+                            </div>
+                        </div>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
-                        <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span><?= $totalQuantity ?></span></a>
-                        <div class="price" id="cart-total"><?= number_format($finalPrice,2) ?></div>
-                        
+                        <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span><?= htmlspecialchars($totalQuantity) ?></span></a>
+                        <div class="price" id="cart-total"><?= number_format($finalPrice, 2) ?></div>
+
                     </div>
                 </div>
             </div>
@@ -170,65 +166,65 @@
         </div>
     </section>
     <!-- Breadcrumb Section End -->
-      
+
     <!-- Shopping Cart Section Begin -->
     <section class="shopping-cart spad">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
                     <div class="shopping__cart__table">
-           <form method="post" action="addToCart.php">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Total</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php
-                                foreach($cart as $item):
-                             if (!is_array($item) || !isset($item['name'], $item['price'])) {
-                                continue;
-                             } 
-                           $price = isset($item['price']) ? (float)$item['price'] : 0;
-                           $quantity = isset($item['quantity']) ? (int)$item['quantity'] : 1; 
-                           $total = $price * $quantity;
-    ?>
-                            
-                                <tr>
-                                    <td class="product__cart__item">
-                                        <div class="product__cart__item__pic">
-                                            <img src="<?= htmlspecialchars($item['image'])?>" alt="">
-                                        </div>
-                                        <div class="product__cart__item__text">
-                                            <h6><?= htmlspecialchars($item['name'])?></h6>
-                                            <h5><?= '$' . htmlspecialchars($item['price'])?></h5>
-                                        </div>
-                                    </td>
-                                    <td class="quantity__item">
-                                        <div class="quantity">
-                                            <div class="pro-qty-2" data-id="<?= htmlspecialchars($item['id']) ?>">
-                                        
-                                                <input type="text" value="<?= $quantity ?>">
-                                             
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="cart__price">$<?= number_format($total, 2) ?></td>
-                                    <td class="cart__close"><i class="fa fa-close close" data-id="<?= trim($item['id']) ?>"></i></td>
-                                </tr>
-                             
-                            </tbody>
-                           
-                            <?php
-                            endforeach;
-                            ?>
-                        </table>
-                            </form>
+                        <form method="post" action="addToCart.php">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                        <th>Total</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if (!empty($cart)):
+                                        foreach ($cart as $items):
+                                            $price = isset($items['price']) ? (float)$items['price'] : 0;
+                                            $quantity = isset($items['quantity']) ? (int)$items['quantity'] : 1;
+                                            $total = $price * $quantity;
+                                    ?>
+
+                                            <tr>
+                                                <td class="product__cart__item">
+                                                    <div class="product__cart__item__pic">
+                                                        <img src="<?= htmlspecialchars($items['main_image']) ?>" alt="">
+                                                    </div>
+                                                    <div class="product__cart__item__text">
+                                                        <h6><?= htmlspecialchars($items['name']) ?></h6>
+                                                        <h5>$<?= number_format($price, 2) ?></h5>
+                                                    </div>
+                                                </td>
+                                                <td class="quantity__item">
+                                                    <div class="quantity">
+                                                        <div class="pro-qty-2" data-id="<?= htmlspecialchars($items['product_id']) ?>">
+
+                                                            <input type="text" value="<?= $quantity ?>">
+
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="cart__price">$<?= number_format($total, 2) ?></td>
+                                                <td class="cart__close"><i class="fa fa-close close" data-id="<?= trim($items['product_id']) ?>"></i></td>
+                                            </tr>
+                                    <?php
+                                        endforeach;
+                                    endif;
+                                    ?>
+                                </tbody>
+
+
+                            </table>
+                        </form>
                     </div>
+
                     <div class="row">
                         <div class="col-lg-6 col-md-6 col-sm-6">
                             <div class="continue__btn">
@@ -253,8 +249,8 @@
                     <div class="cart__total">
                         <h6>Cart total</h6>
                         <ul>
-                            <li>Subtotal <span id="cartSubtotal">$<?= number_format($finalPrice, 2)?></span></li>
-                            <li>Total <span id="cartSum">$<?= number_format($finalPrice, 2)?></span></li>
+                            <li>Subtotal <span id="cartSubtotal">$<?= number_format($finalPrice, 2) ?></span></li>
+                            <li>Total <span id="cartSum">$<?= number_format($finalPrice, 2) ?></span></li>
                         </ul>
                         <a href="checkout.php" class="primary-btn">Proceed to checkout</a>
                     </div>
@@ -321,7 +317,7 @@
                                 document.write(new Date().getFullYear());
                             </script>2020
                             All rights reserved | This template is made with <i class="fa fa-heart-o"
-                            aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
                         </p>
                         <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                     </div>
@@ -355,7 +351,7 @@
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>
     <script src='js/removeProduct.js'></script>
-       <script src='js/cart.js'></script>
+    <script src='js/cart.js'></script>
 
 </body>
 

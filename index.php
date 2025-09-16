@@ -2,22 +2,8 @@
 <html lang="zxx">
  <?php
     session_start();
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
-
-      $totalPrice=0;
-     
-                    foreach($_SESSION['cart'] as $item){
-                        $itemTotal=floatval($item['price'])*intval($item['quantity']);
-                        $totalPrice+=$itemTotal;
-                    }
-                    $discount=$_SESSION['discount']??0;
-                    $finalPrice=$totalPrice-$discount;
-                    if($finalPrice<0){
-                        $finalPrice=0;
-                    }
-    include 'cartnav.php';
+include 'db.php';
+include 'cartnav.php';
 
     ?>
 <head>

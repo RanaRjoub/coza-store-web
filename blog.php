@@ -1,22 +1,9 @@
 <!DOCTYPE html>
-  <?php session_start(); 
-        
-           
-                   if(!isset($_SESSION['cart'])){
-                         $_SESSION['cart']=[];
-                }
-                     $totalPrice=0;
-                    foreach($_SESSION['cart'] as $item){
-                        $itemTotal=floatval($item['price'])*intval($item['quantity']);
-                        $totalPrice+=$itemTotal;
-                    }
-                    $discount=$_SESSION['discount']??0;
-                    $finalPrice=$totalPrice-$discount;
-                    if($finalPrice<0){
-                        $finalPrice=0;
-                    }
-        ?>
+<?php session_start();
+include 'cartnav.php';
+?>
 <html lang="zxx">
+
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="Male_Fashion Template">
@@ -105,9 +92,6 @@
                 </div>
             </div>
         </div>
-            <?php
-     include 'cartnav.php';
-     ?>
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 col-md-3">
@@ -136,10 +120,19 @@
                 </div>
                 <div class="col-lg-3 col-md-3">
                     <div class="header__nav__option">
-                           <a href="#" class="search-switch"><img src="img/icon/search.png" alt=""></a>
+                        <div class="profile-container">
+                            <a href="#" class="profile" onclick="toggleProfileMenu(event)">
+                                <img src="img/icon/user.png" alt="">
+                            </a>
+                            <div class="profile-menu" id="profileMenu">
+                                <a href="profile.php" id="profile">Profile</a>
+
+                                <a href="logout.php" id="login">Log out</a>
+                            </div>
+                        </div>
                         <a href="#"><img src="img/icon/heart.png" alt=""></a>
                         <a href="#"><img src="img/icon/cart.png" width="25px" height="25px" alt=""> <span><?= $totalQuantity ?></span></a>
-                        <div class="price" id="cart-total"><?= number_format($finalPrice,2) ?></div>
+                        <div class="price" id="cart-total"><?= number_format($finalPrice, 2) ?></div>
                     </div>
                 </div>
             </div>
@@ -159,29 +152,29 @@
         </div>
     </section>
     <!-- Breadcrumb Section End -->
-<?php
-include 'blogs.php';
-?>
+    <?php
+    include 'blogs.php';
+    ?>
     <!-- Blog Section Begin -->
     <section class="blog spad">
         <div class="container">
             <div class="row">
                 <?php
-                foreach($blogs as $blog):
+                foreach ($blogs as $blog):
                 ?>
-                <div class="col-lg-4 col-md-6 col-sm-6">
-                    <div class="blog__item">
-                        <div class="blog__item__pic" style="background-image: url('<?= htmlspecialchars($blog['image']) ?>')"></div>
-                        <div class="blog__item__text">
-                            <span><img src="img/icon/calendar.png" alt=""> <?= htmlspecialchars($blog['date'])?></span>
-                            <h5><?= htmlspecialchars($blog['title'])?></h5>
-                            <a href="#">Read More</a>
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <div class="blog__item">
+                            <div class="blog__item__pic" style="background-image: url('<?= htmlspecialchars($blog['image']) ?>')"></div>
+                            <div class="blog__item__text">
+                                <span><img src="img/icon/calendar.png" alt=""> <?= htmlspecialchars($blog['date']) ?></span>
+                                <h5><?= htmlspecialchars($blog['title']) ?></h5>
+                                <a href="#">Read More</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-              <?php
-              endforeach
-              ?>
+                <?php
+                endforeach
+                ?>
     </section>
     <!-- Blog Section End -->
 
@@ -274,7 +267,7 @@ include 'blogs.php';
     <script src="js/mixitup.min.js"></script>
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>
-      <script src='js/cart.js'></script>
+    <script src='js/cart.js'></script>
 </body>
 
 </html>
